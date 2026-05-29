@@ -17,10 +17,16 @@ fi
 echo "Searching Trello board for card with tag: $CARD_TAG..."
 
 # 2. Search for the card ID using the Trello API
-SEARCH_RESPONSE=$(curl -s --request GET \
-  --url "https://api.trello.com/1/search?query=\"$CARD_TAG\"&idBoards=$BOARD_ID&modelTypes=cards&card_fields=id&key=$TRELLO_API_KEY&token=$TRELLO_TOKEN")
+SEARCH_RESPONSE=$(curl -s -G \
+  --url "https://api.trello.com/1/search" \
+  --data-urlencode "query=$CARD_TAG" \
+  --data "idBoards=$BOARD_ID" \
+  --data "modelTypes=cards" \
+  --data "card_fields=id" \
+  --data "key=$TRELLO_API_KEY" \
+  --data "token=$TRELLO_TOKEN")
 
-CARD_ID=$(echo "$SEARCH_RESPONSE" | jq -r '.cards[0].id')
+CARD_ID=$(echo "$SEARCH_RESPONSE" | jq -r '.cards[0].id // empty' || true)
 
 if [ "$CARD_ID" == "null" ] || [ -z "$CARD_ID" ]; then
     echo "Error: No card found with tag $CARD_TAG on this board."

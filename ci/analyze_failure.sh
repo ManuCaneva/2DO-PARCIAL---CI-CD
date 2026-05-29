@@ -3,17 +3,17 @@ set -euo pipefail
 
 echo "Starting failure analysis..."
 
-# 1. Retrieve the error output saved by run_spec_kit.sh
+# Check if the error file exists. If not, it means the pipeline failed BEFORE the test.
 if [ ! -f "ci/error_output.txt" ]; then
-    echo "Error output file not found. Aborting."
-    exit 1
+    echo "Warning: Error output file not found. Pipeline crashed before tests ran."
+    ERROR_TEXT="Infrastructure or Pre-test failure."
+else
+    ERROR_TEXT=$(cat ci/error_output.txt)
 fi
-ERROR_TEXT=$(cat ci/error_output.txt)
 
 echo "Error detected: $ERROR_TEXT"
 
-# 2. Move the card to the Failed column using the modular Trello script
-# We pass the column ID and the error message as a comment
-./ci/notify_trello.sh "$TRELLO_REVIEW_LIST_ID" "Build FAILED. Expected 'MINOLI', but got: $ERROR_TEXT"
+# Move the card to Failed
+./ci/notify_trello.sh "$TRELLO_REVIEW_LIST_ID" "Build FAILED. Error: $ERROR_TEXT"
 
 echo "Failure processed and Trello updated."
