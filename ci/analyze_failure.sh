@@ -22,7 +22,7 @@ echo "AI Explanation: $AI_EXPLANATION"
 ./ci/notify_trello.sh "$TRELLO_REVIEW_LIST_ID" "Build FAILED. AI Analysis: $AI_EXPLANATION"
 
 # Send formatted alert to Telegram including the AI explanation
-SAFE_AI_EXPLANATION=$(echo "$AI_EXPLANATION" | sed 's/</\&lt;/g; s/>/\&gt;/g')
+SAFE_AI_EXPLANATION=$(echo "$AI_EXPLANATION" | sed 's/</[/g; s/>/]/g')
 ./ci/notify_telegram.sh "<b>🚨Build FAILED!</b>%0AContract violated in commit: <code>$SEMAPHORE_GIT_SHA</code>%0AAI Analysis: <i>$SAFE_AI_EXPLANATION</i>"
 
 echo "Failure processed and notifications sent."
