@@ -1,0 +1,28 @@
+version: v1.0
+name: CI/CD Pipeline
+agent:
+  machine:
+    type: f1-standard-2
+    os_image: ubuntu2004
+
+blocks:
+  - name: "Core Business Flow"
+    task:
+      secrets:
+        - name: 2doparcial-secrets
+      jobs:
+        - name: "Traceability and Contract Audit"
+          commands:
+            - checkout
+            - ./ci/notify_trello.sh "$TRELLO_PROCESSING_LIST_ID" "Build started. Commit: $SEMAPHORE_GIT_SHA"
+            - ./ci/run_spec_kit.sh
+      
+      epilogue:
+        on_fail:
+          commands:
+            - echo "Initiating AI analysis and failure alerts..."
+            - ./ci/analyze_failure.sh
+        on_pass:
+          commands:
+            - echo "Contract fulfilled. Simulating success step..."
+            - ./ci/notify_trello.sh "$TRELLO_COMPLETED_LIST_ID" "Build successful. Contract verified."
