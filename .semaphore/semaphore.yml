@@ -14,6 +14,7 @@ blocks:
         - name: "Traceability and Contract Audit"
           commands:
             - checkout
+            - chmod +x ci/*.sh
             - './ci/notify_trello.sh "$TRELLO_PROCESSING_LIST_ID" "Build started - Commit $SEMAPHORE_GIT_SHA"'
             - ./ci/run_spec_kit.sh
       
