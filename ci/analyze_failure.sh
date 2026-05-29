@@ -7,15 +7,21 @@ echo "Starting failure analysis..."
 if [ ! -f "ci/error_output.txt" ]; then
     echo "Warning: Error output file not found. Pipeline crashed before tests ran."
     ERROR_TEXT="Infrastructure or Pre-test failure."
+    AI_EXPLANATION="AI analysis unavailable (missing error log)."
 else
     ERROR_TEXT=$(cat ci/error_output.txt)
+    echo "Requesting AI analysis..."
+    # Capture AI response, allowing graceful failure if the API call drops
+    AI_EXPLANATION=$(./ci/ask_gemini.sh || echo "AI analysis request failed.")
 fi
 
 echo "Error detected: $ERROR_TEXT"
+echo "AI Explanation: $AI_EXPLANATION"
 
-# Move the card to Failed
-./ci/notify_trello.sh "$TRELLO_REVIEW_LIST_ID" "Build FAILED. Error: $ERROR_TEXT"
+# Move the card to Failed and inject AI explanation
+./ci/notify_trello.sh "$TRELLO_REVIEW_LIST_ID" "Build FAILED. AI Analysis: $AI_EXPLANATION"
 
-./ci/notify_telegram.sh "🚨 <b>Build FAILED!</b>%0AContract violated in commit: <code>$SEMAPHORE_GIT_SHA</code>%0AError: <i>$ERROR_TEXT</i>"
+# Send formatted alert to Telegram including the AI explanation
+./ci/notify_telegram.sh "<b>🚨Build FAILED!</b>%0AContract violated in commit: <code>$SEMAPHORE_GIT_SHA</code>%0AAI Analysis: <i>$AI_EXPLANATION</i>"
 
-echo "Failure processed and Trello updated."
+echo "Failure processed and notifications sent."
