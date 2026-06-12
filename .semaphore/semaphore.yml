@@ -38,3 +38,15 @@ blocks:
             - echo "Iniciando compilacion del contenedor..."
             - docker build -t parcial-web .
             - echo "Contenedor compilado con exito."
+
+  - name: "Code Quality Inspection"
+    task:
+      secrets:
+        - name: 2doparcial-secrets
+      jobs:
+        - name: "SonarCloud Analysis"
+          commands:
+            - checkout
+            - wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-8.1.0.6389-linux-x64.zip
+            - unzip -q sonar-scanner-cli-8.1.0.6389-linux-x64.zip
+            - ./sonar-scanner-8.1.0.6389-linux-x64/bin/sonar-scanner

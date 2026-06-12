@@ -1,6 +1,6 @@
 # Evaluación: Integración y Entrega Continua
 
-[![Build Status](https://goya.semaphoreci.com/badges/SEMAPHORE-CI-2DOPARCIAL/branches/main.svg?style=shields&key=92220178-5208-4273-96dd-1e9b73715ea8)](https://goya.semaphoreci.com/projects/SEMAPHORE-CI-2DOPARCIAL)
+[![Build Status](https://goya.semaphoreci.com/badges/SEMAPHORE-CI-2DOPARCIAL/branches/main.svg?style=shields&key=92220178-5208-4273-96dd-1e9b73715ea8)](https://goya.semaphoreci.com/projects/SEMAPHORE-CI-2DOPARCIAL) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ManuCaneva_2DO-PARCIAL---CI-CD&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ManuCaneva_2DO-PARCIAL---CI-CD)
 
 * **Autor:** Cáneva, Franco Manuel
 * **Institución:** Universidad Tecnológica Nacional (UTN) - Ingeniería en Sistemas
