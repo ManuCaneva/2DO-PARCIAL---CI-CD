@@ -34,6 +34,23 @@ El proceso automatizado garantiza que cada nuevo bloque de código introducido s
 
 ---
 
+## 🔧 Entorno de Desarrollo Local
+
+### Prerrequisitos
+- Docker
+
+### Comandos
+
+| Comando | Descripción |
+|---|---|
+| `make build` | Construye la imagen Docker localmente |
+| `make test` | Ejecuta la prueba automatizada (Spec Kit) |
+| `make run` | Levanta el servidor en http://localhost:8080 |
+| `make stop` | Detiene el contenedor |
+| `make all` | Ejecuta build + test (pipeline completo local) |
+
+---
+
 ## 🌐 Proyecto en Vivo
 
 La última versión estable y validada por la Integración Continua se encuentra desplegada automáticamente. 
