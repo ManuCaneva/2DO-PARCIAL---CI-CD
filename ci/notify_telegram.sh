@@ -6,6 +6,9 @@ set -euo pipefail
 MESSAGE="${1:-}"
 FILE_PATH="${2:-}"
 
+# Convert %0A to real newlines (works for both -F multipart and --data-urlencode)
+MESSAGE="${MESSAGE//'%0A'/$'\n'}"
+
 if [ -z "$TELEGRAM_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
     echo "Warning: Telegram credentials not found. Skipping Telegram notification."
     exit 0
@@ -42,9 +45,9 @@ fi
 if [ -n "$MESSAGE" ]; then
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
       "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
-      -d chat_id="${TELEGRAM_CHAT_ID}" \
-      -d text="${MESSAGE}" \
-      -d parse_mode="HTML")
+      --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+      --data-urlencode "text=${MESSAGE}" \
+      --data-urlencode "parse_mode=HTML")
 
     if [ "$HTTP_STATUS" -ne 200 ]; then
         echo "Error: Failed to send Telegram message. HTTP Status: $HTTP_STATUS"

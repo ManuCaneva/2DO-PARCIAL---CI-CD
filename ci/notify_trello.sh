@@ -3,6 +3,8 @@ set -euo pipefail
 
 TARGET_LIST_ID="$1"
 CARD_COMMENT="${2:-}"
+# Convert %0A to real newlines for multiline comments
+CARD_COMMENT="${CARD_COMMENT//'%0A'/$'\n'}"
 ATTACH_FILE="${3:-}"
 BOARD_ID="6a1995863d95c55fa775c20f"
 
