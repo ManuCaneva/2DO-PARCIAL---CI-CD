@@ -20,17 +20,27 @@ echo "AI Explanation: $AI_EXPLANATION"
 
 FIX_PLAN_FILE="ci/fix-plan.md"
 FIX_PLAN_ARGS=""
+FIX_PLAN_NOTE=""
 
 if [ -f "$FIX_PLAN_FILE" ]; then
     echo "Fix plan generated at $FIX_PLAN_FILE"
     FIX_PLAN_ARGS="$FIX_PLAN_FILE"
+    FIX_PLAN_NOTE="%0A%0A  -> fix-plan.md attached"
 fi
 
 # Move the card to Failed, inject AI explanation, and optionally attach fix-plan
-./ci/notify_trello.sh "$TRELLO_REVIEW_LIST_ID" "Build FAILED. AI Analysis: $AI_EXPLANATION" "$FIX_PLAN_ARGS"
+TRELLO_COMMENT="[BUILD FAILED]
+  Commit: $SEMAPHORE_GIT_SHA
+  AI    : $AI_EXPLANATION"
+if [ -n "$FIX_PLAN_ARGS" ]; then
+    TRELLO_COMMENT="$TRELLO_COMMENT
+
+  -> fix-plan.md attached"
+fi
+./ci/notify_trello.sh "$TRELLO_REVIEW_LIST_ID" "$TRELLO_COMMENT" "$FIX_PLAN_ARGS"
 
 # Send formatted alert to Telegram including the AI explanation, and optionally the fix-plan document
 SAFE_AI_EXPLANATION=$(echo "$AI_EXPLANATION" | sed 's/</[/g; s/>/]/g')
-./ci/notify_telegram.sh "<b>🚨Build FAILED!</b>%0AContract violated in commit: <code>$SEMAPHORE_GIT_SHA</code>%0AAI Analysis: <i>$SAFE_AI_EXPLANATION</i>" "$FIX_PLAN_ARGS"
+./ci/notify_telegram.sh "<b>[BUILD FAILED]</b>%0A  Commit  : <code>$SEMAPHORE_GIT_SHA</code>%0A  Contract: violated%0A  AI      : <i>$SAFE_AI_EXPLANATION</i>${FIX_PLAN_NOTE}" "$FIX_PLAN_ARGS"
 
 echo "Failure processed and notifications sent."

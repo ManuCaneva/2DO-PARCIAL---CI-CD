@@ -15,7 +15,9 @@ blocks:
           commands:
             - checkout
             - chmod +x ci/*.sh
-            - './ci/notify_trello.sh "$TRELLO_PROCESSING_LIST_ID" "Build started - Commit $SEMAPHORE_GIT_SHA"'
+            - './ci/notify_trello.sh "$TRELLO_PROCESSING_LIST_ID" "[BUILD STARTED]
+  Commit: $SEMAPHORE_GIT_SHA
+  Status: Processing"'
             - ./ci/run_spec_kit.sh
       
       epilogue:
@@ -26,8 +28,10 @@ blocks:
         on_pass:
           commands:
             - echo "Contract fulfilled. Simulating success step..."
-            - './ci/notify_trello.sh "$TRELLO_COMPLETED_LIST_ID" "Build successful - Contract verified"'
-            - './ci/notify_telegram.sh "Build successful - Contract verified for commit $SEMAPHORE_GIT_SHA"'
+            - './ci/notify_trello.sh "$TRELLO_COMPLETED_LIST_ID" "[BUILD OK]
+  Commit: $SEMAPHORE_GIT_SHA
+  Result: Contract verified"'
+            - './ci/notify_telegram.sh "<b>[BUILD OK]</b>%0A  Commit  : <code>$SEMAPHORE_GIT_SHA</code>%0A  Result  : Contract verified"'
             
   - name: "Docker Build Validation"
     task:

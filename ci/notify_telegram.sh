@@ -13,7 +13,32 @@ fi
 
 echo "Sending notification to Telegram..."
 
-# Send the message via Telegram API
+# If both a file and a message exist, send them together in one document with caption
+if [ -n "$FILE_PATH" ] && [ -f "$FILE_PATH" ]; then
+    if [ -n "$MESSAGE" ]; then
+        HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+          "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument" \
+          -F chat_id="${TELEGRAM_CHAT_ID}" \
+          -F "document=@$FILE_PATH" \
+          -F "caption=${MESSAGE}" \
+          -F parse_mode="HTML")
+    else
+        HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+          "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument" \
+          -F chat_id="${TELEGRAM_CHAT_ID}" \
+          -F "document=@$FILE_PATH")
+    fi
+
+    if [ "$HTTP_STATUS" -ne 200 ]; then
+        echo "Error: Failed to send Telegram document. HTTP Status: $HTTP_STATUS"
+        exit 1
+    fi
+    echo "Telegram document sent successfully."
+    echo "Telegram notification completed."
+    exit 0
+fi
+
+# No file, send message only
 if [ -n "$MESSAGE" ]; then
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
       "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
@@ -26,20 +51,6 @@ if [ -n "$MESSAGE" ]; then
         exit 1
     fi
     echo "Telegram message sent successfully."
-fi
-
-# Send a file as a document if provided
-if [ -n "$FILE_PATH" ] && [ -f "$FILE_PATH" ]; then
-    DOC_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
-      "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument" \
-      -F chat_id="${TELEGRAM_CHAT_ID}" \
-      -F "document=@$FILE_PATH")
-
-    if [ "$DOC_STATUS" -ne 200 ]; then
-        echo "Error: Failed to send Telegram document. HTTP Status: $DOC_STATUS"
-        exit 1
-    fi
-    echo "Telegram document sent successfully."
 fi
 
 echo "Telegram notification completed."
