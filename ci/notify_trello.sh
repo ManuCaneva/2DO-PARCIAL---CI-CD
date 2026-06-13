@@ -3,6 +3,7 @@ set -euo pipefail
 
 TARGET_LIST_ID="$1"
 CARD_COMMENT="${2:-}"
+ATTACH_FILE="${3:-}"
 BOARD_ID="6a1995863d95c55fa775c20f"
 
 # 1. Extract the commit message and the tag (e.g., [2DOP-01])
@@ -60,6 +61,19 @@ if [ -n "$CARD_COMMENT" ]; then
         exit 1
     fi
     echo "Comment added successfully."
+fi
+
+# 5. Attach a file if one was provided (e.g., fix-plan.md)
+if [ -n "$ATTACH_FILE" ] && [ -f "$ATTACH_FILE" ]; then
+    ATTACH_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --request POST \
+      --url "https://api.trello.com/1/cards/$CARD_ID/attachments?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}" \
+      -F "file=@$ATTACH_FILE")
+    
+    if [ "$ATTACH_STATUS" -ne 200 ]; then
+        echo "Error: Failed to attach file. HTTP Status: $ATTACH_STATUS"
+        exit 1
+    fi
+    echo "File attached successfully."
 fi
 
 echo "Trello update completed successfully."
