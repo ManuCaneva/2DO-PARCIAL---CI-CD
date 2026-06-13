@@ -18,19 +18,6 @@ echo "Sending notification to Telegram..."
 
 MESSAGE_NL="${MESSAGE//'%0A'/$'\n'}"
 
-if [ -n "$FILE_PATH" ] && [ -f "$FILE_PATH" ]; then
-    HTTP_STATUS=$(curl "${CURL_OPTS[@]}" -X POST \
-      "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument" \
-      -F chat_id="${TELEGRAM_CHAT_ID}" \
-      -F "document=@$FILE_PATH")
-
-    if [ "$HTTP_STATUS" -ne 200 ]; then
-        echo "Error: Failed to send Telegram document. HTTP Status: $HTTP_STATUS"
-        exit 1
-    fi
-    echo "Telegram document sent successfully."
-fi
-
 if [ -n "$MESSAGE_NL" ]; then
     HTTP_STATUS=$(curl "${CURL_OPTS[@]}" -X POST \
       "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
@@ -43,6 +30,19 @@ if [ -n "$MESSAGE_NL" ]; then
         exit 1
     fi
     echo "Telegram message sent successfully."
+fi
+
+if [ -n "$FILE_PATH" ] && [ -f "$FILE_PATH" ]; then
+    HTTP_STATUS=$(curl "${CURL_OPTS[@]}" -X POST \
+      "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument" \
+      -F chat_id="${TELEGRAM_CHAT_ID}" \
+      -F "document=@$FILE_PATH")
+
+    if [ "$HTTP_STATUS" -ne 200 ]; then
+        echo "Error: Failed to send Telegram document. HTTP Status: $HTTP_STATUS"
+        exit 1
+    fi
+    echo "Telegram document sent successfully."
 fi
 
 echo "Telegram notification completed."
