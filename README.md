@@ -1,58 +1,246 @@
-# Evaluación: Integración y Entrega Continua
+<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
+<a id="readme-top"></a>
 
-[![Build Status](https://goya.semaphoreci.com/badges/SEMAPHORE-CI-2DOPARCIAL/branches/main.svg?style=shields&key=92220178-5208-4273-96dd-1e9b73715ea8)](https://goya.semaphoreci.com/projects/SEMAPHORE-CI-2DOPARCIAL) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ManuCaneva_2DO-PARCIAL---CI-CD&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ManuCaneva_2DO-PARCIAL---CI-CD)
+<!-- PROJECT SHIELDS -->
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![Semaphore CI][semaphore-shield]][semaphore-url]
+[![SonarCloud][sonarcloud-shield]][sonarcloud-url]
+[![LinkedIn][linkedin-shield]][linkedin-url]
 
-* **Autor:** Cáneva, Franco Manuel
-* **Institución:** Universidad Tecnológica Nacional (UTN) - Ingeniería en Sistemas
-* **Materia:** Ingeniería y Calidad de Software
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <h3 align="center">MINOLI</h3>
 
----
+  <p align="center">
+    Continuous Integration · Continuous Delivery
+    <br />
+    <a href="https://goya-2do-parcial.onrender.com/"><strong>View Live Demo »</strong></a>
+  </p>
+</div>
 
-## 🚀 Descripción del Proyecto
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#ci-cd-pipeline">CI/CD Pipeline</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
+  </ol>
+</details>
 
-Este repositorio contiene la implementación práctica requerida para la segunda instancia de evaluación de Integración y Entrega Continua. El objetivo principal de este trabajo es aplicar los conceptos y herramientas teóricas de la integración continua (IC) en un flujo real de desarrollo de software.
+<!-- ABOUT THE PROJECT -->
+## About The Project
 
-La arquitectura diseñada refleja la práctica de integrar cambios en un repositorio común de forma frecuente y automatizada. Esta automatización permite la detección y corrección rápida de errores, eleva la calidad del código fuente y acelera todo el proceso de entrega de valor.
+This repository contains the practical implementation required for the second evaluation instance of **Continuous Integration and Continuous Delivery** in the *Software Engineering and Quality* course at Universidad Tecnológica Nacional (UTN).
 
-## 🏗️ Arquitectura y Componentes del Entorno
+The project applies CI/CD concepts and tools in a real software development workflow. The architecture reflects the practice of integrating changes into a shared repository frequently and automatically, enabling rapid error detection, improved code quality, and accelerated delivery.
 
-El entorno de Integración Continua fue estructurado configurando los componentes fundamentales requeridos para el ciclo de vida del software:
+### Architecture & Components
 
-* **Control de Versiones:** Gestión centralizada del código mediante Git y GitHub, utilizando una estrategia de *Feature Branches* y protección de la rama `main` mediante *Pull Requests*.
-* **Servidor de IC:** El pipeline de construcción y la ejecución de pruebas automáticas se encuentran orquestados a través de **Semaphore CI**.
-* **Pruebas Automatizadas y SDD:** Se incorporó una validación estricta de contratos implementando capacidades de *Spec Driven Development* (SDD).
-* **Gestión de Entornos:** Se implementó la containerización utilizando **Docker** como gestor del entorno de ejecución aislado (basado en Nginx).
-* **Entorno de Entrega:** Se configuró un despliegue continuo automatizado utilizando **Render**, conectando la validación del servidor de IC directamente con la puesta en producción.
+The CI/CD environment was built by configuring the following core components:
 
-## 🔄 Flujo de Trabajo (Pipeline CI/CD)
+* **Version Control:** Centralized code management via Git and GitHub, using a feature-branch strategy with `main` branch protection through Pull Requests.
+* **CI Server:** Build pipeline and automated test execution orchestrated through **Semaphore CI**.
+* **Automated Testing & SDD:** Strict contract validation using Spec Driven Development (SDD) via a custom spec kit.
+* **Code Quality Inspection:** Static analysis and quality gates enforced by **SonarCloud**.
+* **Environment Management:** Containerization with **Docker** (Nginx Alpine image) for isolated and reproducible execution environments.
+* **Delivery Environment:** Automated continuous deployment configured on **Render**, connecting CI server validation directly to production release.
+* **Feedback Mechanism:** Pipeline results broadcast to the team via **Trello** (card updates) and **Telegram** (instant notifications), with **Gemini AI** assisting in failure analysis.
 
-El proceso automatizado garantiza que cada nuevo bloque de código introducido sea auditado de manera estricta antes de llegar a los usuarios. El flujo consta de las siguientes etapas:
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-1. **Auditoría de Contrato:** El servidor de IC ejecuta los scripts de validación (SDD). Si la prueba falla, el proceso se aborta inmediatamente, bloqueando la integración y disparando alertas a través de Trello y Telegram.
-2. **Construcción (Build):** Únicamente tras la aprobación exitosa de los test automatizados, el pipeline procede a compilar el contenedor Docker, asegurando que la imagen resultante esté libre de errores.
-3. **Despliegue Continuo:** Una vez que la imagen es validada y el código es fusionado con la rama principal, el entorno de Render la despliega automáticamente, manteniendo el ciclo de entrega estable y sin intervención manual.
+### Built With
 
----
+[![Git][Git]][Git-url]
+[![GitHub][GitHub]][GitHub-url]
+[![Semaphore CI][Semaphore]][Semaphore-url]
+[![Docker][Docker]][Docker-url]
+[![Nginx][Nginx]][Nginx-url]
+[![SonarCloud][SonarCloud]][SonarCloud-url]
+[![Render][Render]][Render-url]
+[![Trello][Trello]][Trello-url]
+[![Telegram][Telegram]][Telegram-url]
+[![Gemini][Gemini]][Gemini-url]
 
-## 🔧 Entorno de Desarrollo Local
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Prerrequisitos
-- Docker
+<!-- GETTING STARTED -->
+## Getting Started
 
-### Comandos
+To get a local copy up and running, follow these simple steps.
 
-| Comando | Descripción |
+### Prerequisites
+
+* Docker
+  ```sh
+  # Verify Docker is installed
+  docker --version
+  ```
+
+### Installation
+
+1. Clone the repo
+   ```sh
+   git clone https://github.com/ManuCaneva/2DO-PARCIAL---CI-CD.git
+   ```
+2. Build the Docker image
+   ```sh
+   make build
+   ```
+3. Run the spec kit tests locally
+   ```sh
+   make test
+   ```
+4. Start the server
+   ```sh
+   make run
+   ```
+5. Open [http://localhost:8080](http://localhost:8080)
+
+### Make Commands
+
+| Command | Description |
 |---|---|
-| `make build` | Construye la imagen Docker localmente |
-| `make test` | Ejecuta la prueba automatizada (Spec Kit) |
-| `make run` | Levanta el servidor en http://localhost:8080 |
-| `make stop` | Detiene el contenedor |
-| `make all` | Ejecuta build + test (pipeline completo local) |
+| `make build` | Build the local Docker image |
+| `make test` | Run the automated spec kit test |
+| `make run` | Start the server at http://localhost:8080 |
+| `make stop` | Stop the running container |
+| `make all` | Run build + test (full local pipeline) |
 
----
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## 🌐 Proyecto en Vivo
+<!-- USAGE EXAMPLES -->
+## Usage
 
-La última versión estable y validada por la Integración Continua se encuentra desplegada automáticamente. 
+Once the server is running, visit `http://localhost:8080` to see the MINOLI landing page, which displays the current CI/CD pipeline status.
 
-Podés ver el proyecto funcionando acá: **[👉 Ver despliegue en Render] https://goya-2do-parcial.onrender.com/**
+The latest stable and CI-validated version is also deployed automatically at:
+**https://goya-2do-parcial.onrender.com/**
+
+Every push or Pull Request to the `main` branch triggers the full pipeline on Semaphore CI, which runs contract validation, code quality analysis, Docker build verification, and automated deployment to Render upon success.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- CI/CD PIPELINE -->
+## CI/CD Pipeline
+
+The automated pipeline enforces strict auditing on every code change before it reaches production:
+
+1. **Contract Audit (SDD):** The CI server executes the spec kit validation scripts. If the test fails, the pipeline aborts immediately, blocking integration and triggering alerts via Trello and Telegram.
+2. **Code Quality Inspection:** **SonarCloud** analyzes the codebase for bugs, code smells, and duplications. The pipeline only proceeds if the Quality Gate passes.
+3. **Docker Build Validation:** Once the previous stages pass, the pipeline compiles the Docker container, ensuring a clean and error-free image.
+4. **Continuous Deployment:** After the validated code is merged into `main`, **Render** automatically deploys the new image, keeping the delivery cycle stable and hands-free.
+
+```mermaid
+graph LR
+    A[Git Push / PR] --> B{Contract Audit}
+    B -- Fail --> C[Feedback: Trello + Telegram]
+    B -- Pass --> D[SonarCloud Quality Gate]
+    D -- Fail --> C
+    D -- Pass --> E[Docker Build]
+    E --> F[Deploy to Render]
+    F --> G[Production]
+```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- CONTRIBUTING -->
+## Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+If you have a suggestion that would make this better, please fork the repo and create a pull request.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- LICENSE -->
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- CONTACT -->
+## Contact
+
+**Franco Manuel Cáneva**
+
+[![LinkedIn][linkedin-shield]][linkedin-url]
+
+Project Link: [https://github.com/ManuCaneva/2DO-PARCIAL---CI-CD](https://github.com/ManuCaneva/2DO-PARCIAL---CI-CD)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- ACKNOWLEDGMENTS -->
+## Acknowledgments
+
+* [Universidad Tecnológica Nacional (UTN)](https://www.utn.edu.ar/)
+* [Semaphore CI](https://semaphoreci.com/)
+* [SonarCloud](https://sonarcloud.io/)
+* [Render](https://render.com/)
+* [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- MARKDOWN LINKS & IMAGES -->
+[contributors-shield]: https://img.shields.io/github/contributors/ManuCaneva/2DO-PARCIAL---CI-CD.svg?style=for-the-badge
+[contributors-url]: https://github.com/ManuCaneva/2DO-PARCIAL---CI-CD/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/ManuCaneva/2DO-PARCIAL---CI-CD.svg?style=for-the-badge
+[forks-url]: https://github.com/ManuCaneva/2DO-PARCIAL---CI-CD/network/members
+[stars-shield]: https://img.shields.io/github/stars/ManuCaneva/2DO-PARCIAL---CI-CD.svg?style=for-the-badge
+[stars-url]: https://github.com/ManuCaneva/2DO-PARCIAL---CI-CD/stargazers
+[issues-shield]: https://img.shields.io/github/issues/ManuCaneva/2DO-PARCIAL---CI-CD.svg?style=for-the-badge
+[issues-url]: https://github.com/ManuCaneva/2DO-PARCIAL---CI-CD/issues
+[semaphore-shield]: https://img.shields.io/badge/Semaphore_CI-19A974?style=for-the-badge&logo=semaphoreci&logoColor=white
+[semaphore-url]: https://goya.semaphoreci.com/projects/SEMAPHORE-CI-2DOPARCIAL
+[sonarcloud-shield]: https://img.shields.io/badge/SonarCloud-F3702A?style=for-the-badge&logo=sonarcloud&logoColor=white
+[sonarcloud-url]: https://sonarcloud.io/summary/new_code?id=ManuCaneva_2DO-PARCIAL---CI-CD
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=0A66C2
+[linkedin-url]: https://www.linkedin.com/in/franco-manuel-caneva/
+<!-- Built With Badges -->
+[Git]: https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white
+[Git-url]: https://git-scm.com/
+[GitHub]: https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white
+[GitHub-url]: https://github.com/
+[Semaphore]: https://img.shields.io/badge/Semaphore_CI-19A974?style=for-the-badge&logo=semaphoreci&logoColor=white
+[Semaphore-url]: https://semaphoreci.com/
+[Docker]: https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white
+[Docker-url]: https://www.docker.com/
+[Nginx]: https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white
+[Nginx-url]: https://nginx.org/
+[SonarCloud]: https://img.shields.io/badge/SonarCloud-F3702A?style=for-the-badge&logo=sonarcloud&logoColor=white
+[SonarCloud-url]: https://sonarcloud.io/
+[Render]: https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white
+[Render-url]: https://render.com/
+[Trello]: https://img.shields.io/badge/Trello-0052CC?style=for-the-badge&logo=trello&logoColor=white
+[Trello-url]: https://trello.com/
+[Telegram]: https://img.shields.io/badge/Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white
+[Telegram-url]: https://telegram.org/
+[Gemini]: https://img.shields.io/badge/Gemini-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white
+[Gemini-url]: https://gemini.google.com/
