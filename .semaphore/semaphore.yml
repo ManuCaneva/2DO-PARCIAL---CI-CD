@@ -15,7 +15,7 @@ blocks:
           commands:
             - checkout
             - chmod +x ci/*.sh
-            - './ci/notify_trello.sh "$TRELLO_PROCESSING_LIST_ID" "Build started - Commit $SEMAPHORE_GIT_SHA"'
+            - './ci/notify_trello.sh "$TRELLO_PROCESSING_LIST_ID" "[BUILD STARTED]%0A  Commit: $SEMAPHORE_GIT_SHA%0A  Status: Processing"'
             - ./ci/run_spec_kit.sh
       
       epilogue:
@@ -26,9 +26,21 @@ blocks:
         on_pass:
           commands:
             - echo "Contract fulfilled. Simulating success step..."
-            - './ci/notify_trello.sh "$TRELLO_COMPLETED_LIST_ID" "Build successful - Contract verified"'
-            - './ci/notify_telegram.sh "Build successful - Contract verified for commit $SEMAPHORE_GIT_SHA"'
-            
+            - './ci/notify_trello.sh "$TRELLO_COMPLETED_LIST_ID" "[BUILD OK]%0A  Commit: $SEMAPHORE_GIT_SHA%0A  Result: Contract verified"'
+            - './ci/notify_telegram.sh "<b>[BUILD OK]</b>%0A  Commit  : <code>$SEMAPHORE_GIT_SHA</code>%0A  Result  : Contract verified"'
+
+  - name: "Code Quality Inspection"
+    task:
+      secrets:
+        - name: 2doparcial-secrets
+      jobs:
+        - name: "SonarCloud Analysis"
+          commands:
+            - checkout
+            - wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-8.1.0.6389-linux-x64.zip
+            - unzip -q sonar-scanner-cli-8.1.0.6389-linux-x64.zip
+            - ./sonar-scanner-8.1.0.6389-linux-x64/bin/sonar-scanner
+
   - name: "Docker Build Validation"
     task:
       jobs:

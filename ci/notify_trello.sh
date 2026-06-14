@@ -3,6 +3,9 @@ set -euo pipefail
 
 TARGET_LIST_ID="$1"
 CARD_COMMENT="${2:-}"
+# Convert %0A to real newlines for multiline comments
+CARD_COMMENT="${CARD_COMMENT//'%0A'/$'\n'}"
+ATTACH_FILE="${3:-}"
 BOARD_ID="6a1995863d95c55fa775c20f"
 
 # 1. Extract the commit message and the tag (e.g., [2DOP-01])
@@ -60,6 +63,37 @@ if [ -n "$CARD_COMMENT" ]; then
         exit 1
     fi
     echo "Comment added successfully."
+fi
+
+# 5. Attach a file if one was provided (e.g., fix-plan.md)
+if [ -n "$ATTACH_FILE" ] && [ -f "$ATTACH_FILE" ]; then
+    ATTACH_NAME=$(basename "$ATTACH_FILE")
+
+    # List existing attachments and remove any with the same filename
+    EXISTING_ATTACHMENTS=$(curl -s -G \
+      --url "https://api.trello.com/1/cards/$CARD_ID/attachments" \
+      --data "fields=id,name" \
+      --data "key=$TRELLO_API_KEY" \
+      --data "token=$TRELLO_TOKEN" || echo "[]")
+
+    echo "$EXISTING_ATTACHMENTS" | jq -c '.[] | select(.name == "'"$ATTACH_NAME"'")' | while read -r OLD_ATTACH; do
+        OLD_ID=$(echo "$OLD_ATTACH" | jq -r '.id')
+        DELETE_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --request DELETE \
+          --url "https://api.trello.com/1/cards/$CARD_ID/attachments/$OLD_ID" \
+          --data "key=$TRELLO_API_KEY" \
+          --data "token=$TRELLO_TOKEN")
+        echo "Removed previous attachment $ATTACH_NAME (id: $OLD_ID) HTTP: $DELETE_STATUS"
+    done
+
+    ATTACH_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --request POST \
+      --url "https://api.trello.com/1/cards/$CARD_ID/attachments?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}" \
+      -F "file=@$ATTACH_FILE")
+    
+    if [ "$ATTACH_STATUS" -ne 200 ]; then
+        echo "Error: Failed to attach file. HTTP Status: $ATTACH_STATUS"
+        exit 1
+    fi
+    echo "File attached successfully."
 fi
 
 echo "Trello update completed successfully."
