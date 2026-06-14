@@ -7,7 +7,7 @@ if [ -z "${GEMINI_API_KEY:-}" ]; then
 fi
 
 # Verify that required files exist
-for file in "ci/error_output.txt" "index.html" "ci/run_spec_kit.sh" "docs/requirements.md"; do
+for file in "ci/error_output.txt" "index.html" "ci/run_contract_test.sh" "spec/requirements.md"; do
     if [ ! -f "$file" ]; then
         echo "Error: File $file does not exist."
         exit 1
@@ -29,11 +29,11 @@ Part 2 (after delimiter): A complete fix-plan markdown document with the followi
 Use the project quality requirements as guidance for the fix plan." \
   --arg err "$(cat ci/error_output.txt)" \
   --arg html "$(cat index.html)" \
-  --arg test "$(cat ci/run_spec_kit.sh)" \
-  --arg reqs "$(cat docs/requirements.md)" \
+  --arg test "$(cat ci/run_contract_test.sh)" \
+  --arg reqs "$(cat spec/requirements.md)" \
   '{
     contents: [{
-      parts: [{text: ($prompt + "\n\n--- GENERATED ERROR ---\n" + $err + "\n\n--- SOURCE CODE (index.html) ---\n" + $html + "\n\n--- TEST SCRIPT (run_spec_kit.sh) ---\n" + $test + "\n\n--- QUALITY REQUIREMENTS ---\n" + $reqs)}]
+      parts: [{text: ($prompt + "\n\n--- GENERATED ERROR ---\n" + $err + "\n\n--- SOURCE CODE (index.html) ---\n" + $html + "\n\n--- TEST SCRIPT (run_contract_test.sh) ---\n" + $test + "\n\n--- QUALITY REQUIREMENTS ---\n" + $reqs)}]
     }],
     generationConfig: {
       temperature: 0.2

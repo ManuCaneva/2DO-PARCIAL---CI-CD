@@ -16,7 +16,7 @@ blocks:
             - checkout
             - chmod +x ci/*.sh
             - './ci/notify_trello.sh "$TRELLO_PROCESSING_LIST_ID" "[BUILD STARTED]%0A  Commit: $SEMAPHORE_GIT_SHA%0A  Status: Processing"'
-            - ./ci/run_spec_kit.sh
+            - ./ci/run_contract_test.sh
       
       epilogue:
         on_fail:

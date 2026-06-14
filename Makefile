@@ -4,7 +4,7 @@ build:
 	docker compose build
 
 test:
-	./ci/run_spec_kit.sh
+	./ci/run_contract_test.sh
 
 run:
 	docker compose up -d
