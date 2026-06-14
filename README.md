@@ -61,7 +61,8 @@ The CI/CD environment was built by configuring the following core components:
 
 * **Version Control:** Centralized code management via Git and GitHub, using a feature-branch strategy with `main` branch protection through Pull Requests.
 * **CI Server:** Build pipeline and automated test execution orchestrated through **Semaphore CI**.
-* **Automated Testing & SDD:** Strict contract validation using Spec Driven Development (SDD) via a custom spec kit.
+* **Contract Validation:** Automated tests verify the HTML output strictly matches the expected contract on every pipeline run.
+* **Spec-Driven Development (SDD):** When a contract is broken, Gemini AI analyzes the failure against the quality requirements (`docs/requirements.md`) and generates a structured fix plan — the specification drives the recommended solution.
 * **Code Quality Inspection:** Static analysis and quality gates enforced by **SonarCloud**.
 * **Environment Management:** Containerization with **Docker** (Nginx Alpine image) for isolated and reproducible execution environments.
 * **Delivery Environment:** Automated continuous deployment configured on **Render**, connecting CI server validation directly to production release.
