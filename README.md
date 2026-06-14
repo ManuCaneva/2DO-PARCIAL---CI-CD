@@ -137,7 +137,7 @@ Once the server is running, visit `http://localhost:8080` to see the MINOLI land
 The latest stable and CI-validated version is also deployed automatically at:
 **https://goya-2do-parcial.onrender.com/**
 
-Every push or Pull Request to the `main` branch triggers the full pipeline on Semaphore CI, which runs contract validation, code quality analysis, Docker build verification, and automated deployment to Render upon success.
+Every push or Pull Request to any branch triggers the full pipeline on Semaphore CI, which runs contract validation, code quality analysis, and Docker build verification. Automated deployment to Render, however, only occurs when changes are merged into `main` via a Pull Request — direct pushes to `main` are blocked by branch protection rules.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -162,19 +162,21 @@ graph LR
     F --> G[Production]
 ```
 
+> **Note:** The pipeline runs on **every branch**. Deployment to Render is exclusive to `main` and only happens after a Pull Request merge. Direct pushes to `main` are disabled — branch protection requires all changes to go through Pull Requests with at least one approval.
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CONTRIBUTING -->
 ## Contributing
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+This project is an academic evaluation for a Continuous Integration and Continuous Delivery course. While it serves as a partial exam submission, any well-founded suggestions, improvements, or alternative approaches are welcome and will be carefully considered.
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request.
+If you have a reasoned idea that could enhance the pipeline, the tooling, or the overall architecture, please feel free to open an issue or submit a Pull Request. All contributions should include a clear explanation of the proposed change and its rationale.
 
 1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
+2. Create your Feature Branch (`git checkout -b feature/YourIdea`)
+3. Commit your Changes (`git commit -m 'Add a clear description of your improvement'`)
+4. Push to the Branch (`git push origin feature/YourIdea`)
 5. Open a Pull Request
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
