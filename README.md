@@ -62,7 +62,7 @@ The CI/CD environment was built by configuring the following core components:
 * **Version Control:** Centralized code management via Git and GitHub, using a feature-branch strategy with `main` branch protection through Pull Requests.
 * **CI Server:** Build pipeline and automated test execution orchestrated through **Semaphore CI**.
 * **Contract Validation:** Automated tests verify the HTML output strictly matches the expected contract on every pipeline run.
-* **Spec-Driven Development (SDD):** When a contract is broken, Gemini AI analyzes the failure against the quality requirements (`docs/requirements.md`) and generates a structured fix plan — the specification drives the recommended solution.
+* **Spec-Driven Development (SDD):** When a contract is broken, Gemini AI analyzes the failure against the quality requirements (`spec/requirements.md`) and generates a structured fix plan — the specification drives the recommended solution.
 * **Code Quality Inspection:** Static analysis and quality gates enforced by **SonarCloud**.
 * **Environment Management:** Containerization with **Docker** (Nginx Alpine image) for isolated and reproducible execution environments.
 * **Delivery Environment:** Automated continuous deployment configured on **Render**, connecting CI server validation directly to production release.
@@ -108,7 +108,7 @@ To get a local copy up and running, follow these simple steps.
    ```sh
    make build
    ```
-3. Run the spec kit tests locally
+3. Run the contract test locally
    ```sh
    make test
    ```
@@ -123,7 +123,7 @@ To get a local copy up and running, follow these simple steps.
 | Command | Description |
 |---|---|
 | `make build` | Build the local Docker image |
-| `make test` | Run the automated spec kit test |
+| `make test` | Run the automated contract test |
 | `make run` | Start the server at http://localhost:8080 |
 | `make stop` | Stop the running container |
 | `make all` | Run build + test (full local pipeline) |
@@ -147,7 +147,7 @@ Every push or Pull Request to any branch triggers the full pipeline on Semaphore
 
 The automated pipeline enforces strict auditing on every code change before it reaches production:
 
-1. **Contract Audit (SDD):** The CI server executes the spec kit validation scripts. If the test fails, the pipeline aborts immediately, blocking integration and triggering alerts via Trello and Telegram.
+1. **Contract Audit (SDD):** The CI server executes the contract validation script. If the test fails, the pipeline aborts immediately, blocking integration and triggering alerts via Trello and Telegram.
 2. **Code Quality Inspection:** **SonarCloud** analyzes the codebase for bugs, code smells, and duplications. The pipeline only proceeds if the Quality Gate passes.
 3. **Docker Build Validation:** Once the previous stages pass, the pipeline compiles the Docker container, ensuring a clean and error-free image.
 4. **Continuous Deployment:** After the validated code is merged into `main`, **Render** automatically deploys the new image, keeping the delivery cycle stable and hands-free.
