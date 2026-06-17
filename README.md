@@ -2,13 +2,14 @@
 <a id="readme-top"></a>
 
 <!-- PROJECT SHIELDS -->
+<div align="center">
+
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![Semaphore CI][semaphore-shield]][semaphore-url]
-[![SonarCloud][sonarcloud-shield]][sonarcloud-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+
+</div>
 
 <!-- PROJECT LOGO -->
 <br />
@@ -82,6 +83,8 @@ The CI/CD environment was built by configuring the following core components:
 [![Trello][Trello]][Trello-url]
 [![Telegram][Telegram]][Telegram-url]
 [![Gemini][Gemini]][Gemini-url]
+
+![Resultado][resultado-img]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -247,3 +250,4 @@ Project Link: [https://github.com/ManuCaneva/2DO-PARCIAL---CI-CD](https://github
 [Telegram-url]: https://telegram.org/
 [Gemini]: https://img.shields.io/badge/Gemini-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white
 [Gemini-url]: https://gemini.google.com/
+[resultado-img]: docs/resultado.png
