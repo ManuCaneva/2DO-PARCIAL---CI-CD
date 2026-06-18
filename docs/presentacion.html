@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MINOLI — CI/CD Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+::selection{background:rgba(94,106,210,.3);color:#f7f8f8}
+:root{
+  --canvas:#010102;
+  --surface-1:#131518;
+  --surface-2:#1a1d21;
+  --hairline:#23252a;
+  --primary:#5e6ad2;
+  --primary-hover:#828fff;
+  --ink:#f7f8f8;
+  --ink-muted:#d0d6e0;
+  --ink-subtle:#8a8f98;
+  --ink-tertiary:#62666d;
+  --success:#27a644;
+  --font:Inter,-apple-system,system-ui,sans-serif;
+  --slide-transition:650ms cubic-bezier(.16,1,.3,1)
+}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:var(--font);
+  background:var(--canvas);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale
+}
+#particles-canvas{
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  z-index:0;pointer-events:none
+}
+
+#pres{
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  z-index:1;overflow:hidden
+}
+.slide{
+  position:absolute;top:0;left:0;
+  width:100%;height:100%;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:3rem 4rem;
+  opacity:0;visibility:hidden;
+  transform:translateX(60px);
+  transition:opacity var(--slide-transition),transform var(--slide-transition),visibility 0s var(--slide-transition);
+  overflow-y:auto
+}
+.slide.active{
+  opacity:1;visibility:visible;
+  transform:translateX(0);
+  transition:opacity var(--slide-transition),transform var(--slide-transition),visibility 0s 0s
+}
+.slide.exit-left{
+  opacity:0;visibility:hidden;
+  transform:translateX(-60px);
+  transition:opacity var(--slide-transition),transform var(--slide-transition),visibility 0s var(--slide-transition)
+}
+.slide.exit-right{
+  opacity:0;visibility:hidden;
+  transform:translateX(60px);
+  transition:opacity var(--slide-transition),transform var(--slide-transition),visibility 0s var(--slide-transition)
+}
+.slide-inner{
+  width:100%;max-width:1100px;
+  margin:0 auto
+}
+
+#nav{
+  position:fixed;bottom:2rem;left:50%;
+  transform:translateX(-50%);
+  z-index:10;
+  display:flex;align-items:center;gap:1.25rem
+}
+#nav-dots{display:flex;gap:8px}
+.nav-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--ink-tertiary);
+  border:none;cursor:pointer;
+  transition:background .3s ease,transform .3s ease;
+  padding:0
+}
+.nav-dot.active{background:var(--primary);transform:scale(1.3)}
+.nav-dot:hover{background:var(--ink-subtle)}
+#nav-counter{
+  font-size:.75rem;color:var(--ink-tertiary);
+  font-weight:400;letter-spacing:.02em;
+  font-family:var(--font);user-select:none
+}
+.nav-arrow{
+  position:fixed;top:50%;z-index:10;
+  transform:translateY(-50%);
+  background:rgba(19,21,24,.7);
+  border:1px solid var(--hairline);
+  color:var(--ink-muted);
+  width:44px;height:44px;border-radius:8px;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;
+  transition:background .25s ease,color .25s ease,border-color .25s ease;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)
+}
+.nav-arrow:hover{background:var(--surface-1);color:var(--ink);border-color:var(--primary)}
+.nav-arrow:active{transform:translateY(-50%) scale(.95)}
+.nav-arrow.prev{left:1rem}
+.nav-arrow.next{right:1rem}
+.nav-arrow.hidden{opacity:0;pointer-events:none}
+
+.portada{text-align:center}
+.portada .hero-title{
+  font-size:clamp(3rem,8vw,6rem);
+  font-weight:600;letter-spacing:-.04em;
+  line-height:1.05;color:var(--ink);
+  opacity:0;transform:translateY(30px);
+  animation:fadeUp 1s cubic-bezier(.16,1,.3,1) .1s forwards
+}
+.portada .hero-subtitle{
+  font-size:clamp(.95rem,1.5vw,1.15rem);
+  font-weight:400;letter-spacing:-.01em;
+  color:var(--ink-subtle);line-height:1.5;
+  margin-top:.75rem;
+  opacity:0;transform:translateY(20px);
+  animation:fadeUp .9s cubic-bezier(.16,1,.3,1) .3s forwards
+}
+.portada .divider{
+  width:80px;height:1px;background:var(--hairline);
+  margin:2rem auto;
+  opacity:0;animation:fadeIn .8s ease .5s forwards
+}
+.portada .info-row{
+  display:flex;align-items:center;justify-content:center;
+  gap:.6rem;flex-wrap:wrap;
+  font-size:.85rem;color:var(--ink-tertiary);
+  opacity:0;animation:fadeIn .8s ease .7s forwards
+}
+.portada .badge{
+  display:inline-flex;align-items:center;gap:.4rem;
+  background:var(--surface-1);border:1px solid var(--hairline);
+  border-radius:8px;padding:.45rem .9rem;
+  font-size:.8rem;color:var(--ink-muted);
+  margin-top:1.5rem;
+  opacity:0;animation:fadeUp .8s cubic-bezier(.16,1,.3,1) .9s forwards
+}
+.portada .badge-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--success);
+  box-shadow:0 0 8px rgba(39,166,68,.4);
+  animation:pulse 2.5s ease-in-out infinite
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.85)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{to{opacity:1}}
+
+.slide-title{
+  font-size:clamp(1.6rem,3vw,2.4rem);
+  font-weight:600;letter-spacing:-.03em;
+  color:var(--ink);line-height:1.15;
+  margin-bottom:.35rem
+}
+.slide-subtitle{
+  font-size:.9rem;font-weight:400;
+  color:var(--ink-subtle);letter-spacing:-.01em;
+  margin-bottom:2rem
+}
+.slide-divider{
+  width:50px;height:2px;
+  background:var(--primary);border-radius:2px;
+  margin-bottom:1.75rem
+}
+
+.card-grid{display:grid;gap:1rem;width:100%}
+.card-grid-2{grid-template-columns:1fr 1fr}
+.card-grid-3{grid-template-columns:1fr 1fr 1fr}
+.card{
+  background:var(--surface-1);
+  border:1px solid var(--hairline);
+  border-radius:12px;padding:1.25rem 1.5rem;
+  transition:border-color .3s ease,box-shadow .3s ease;
+  opacity:0;transform:translateY(15px)
+}
+.slide.active .card{animation:fadeUp .7s cubic-bezier(.16,1,.3,1) forwards}
+.slide.active .card:nth-child(1){animation-delay:.15s}
+.slide.active .card:nth-child(2){animation-delay:.25s}
+.slide.active .card:nth-child(3){animation-delay:.35s}
+.slide.active .card:nth-child(4){animation-delay:.45s}
+.card:hover{border-color:var(--primary);box-shadow:0 0 25px rgba(94,106,210,.06)}
+.card-icon{
+  font-size:1.4rem;margin-bottom:.6rem;
+  display:inline-block
+}
+.card-title{
+  font-size:.95rem;font-weight:500;
+  color:var(--ink);letter-spacing:-.02em;
+  margin-bottom:.35rem
+}
+.card-desc{
+  font-size:.8rem;font-weight:400;
+  color:var(--ink-subtle);line-height:1.5;
+  letter-spacing:-.01em
+}
+.card-desc strong{color:var(--ink-muted);font-weight:500}
+.card-desc code{
+  font-family:ui-monospace,SF Mono,Menlo,monospace;
+  font-size:.75rem;background:rgba(94,106,210,.1);
+  padding:.1em .35em;border-radius:4px;
+  color:var(--primary-hover)
+}
+
+.diagram-wrapper{
+  width:100%;margin-bottom:1.5rem;
+  background:var(--surface-1);
+  border:1px solid var(--hairline);
+  border-radius:16px;padding:.75rem;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;animation:fadeUp .8s cubic-bezier(.16,1,.3,1) .15s forwards
+}
+.diagram-wrapper img{
+  width:100%;height:auto;
+  border-radius:12px;display:block
+}
+.tools-row{
+  display:flex;flex-wrap:wrap;
+  gap:.5rem;justify-content:center;
+  opacity:0;animation:fadeIn .8s ease .5s forwards
+}
+.tool-badge{
+  display:inline-flex;align-items:center;gap:.35rem;
+  padding:.3rem .7rem;border-radius:6px;
+  font-size:.72rem;font-weight:500;
+  letter-spacing:-.01em;
+  background:var(--surface-1);border:1px solid var(--hairline);
+  color:var(--ink-muted);
+  transition:border-color .3s ease
+}
+.tool-badge:hover{border-color:var(--primary)}
+.tool-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+
+.steps{display:flex;flex-direction:column;gap:.65rem;width:100%}
+.step{
+  display:flex;align-items:flex-start;gap:1rem;
+  background:var(--surface-1);
+  border:1px solid var(--hairline);
+  border-radius:10px;padding:1rem 1.25rem;
+  transition:border-color .3s ease;
+  opacity:0;transform:translateY(15px)
+}
+.slide.active .step{animation:fadeUp .7s cubic-bezier(.16,1,.3,1) forwards}
+.slide.active .step:nth-child(1){animation-delay:.15s}
+.slide.active .step:nth-child(2){animation-delay:.3s}
+.slide.active .step:nth-child(3){animation-delay:.45s}
+.step:hover{border-color:var(--primary)}
+.step-num{
+  width:28px;height:28px;min-width:28px;
+  border-radius:50%;
+  background:rgba(94,106,210,.15);
+  color:var(--primary-hover);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;font-weight:600
+}
+.step-body{flex:1}
+.step-title{
+  font-size:.88rem;font-weight:500;
+  color:var(--ink);letter-spacing:-.02em;
+  margin-bottom:.15rem
+}
+.step-desc{
+  font-size:.78rem;color:var(--ink-subtle);
+  line-height:1.45;letter-spacing:-.01em
+}
+.step-desc code{
+  font-family:ui-monospace,SF Mono,Menlo,monospace;
+  font-size:.72rem;background:rgba(94,106,210,.1);
+  padding:.1em .35em;border-radius:4px;
+  color:var(--primary-hover)
+}
+
+.pipeline-flow{
+  display:flex;align-items:center;
+  gap:.5rem;flex-wrap:wrap;justify-content:center;
+  width:100%;margin-bottom:2rem;
+  opacity:0;animation:fadeUp .8s cubic-bezier(.16,1,.3,1) .15s forwards
+}
+.pipeline-node{
+  background:var(--surface-1);
+  border:1px solid var(--hairline);
+  border-radius:10px;padding:.75rem 1rem;
+  text-align:center;min-width:130px;flex:1;
+  transition:border-color .3s ease,box-shadow .3s ease
+}
+.pipeline-node:hover{border-color:var(--primary);box-shadow:0 0 20px rgba(94,106,210,.06)}
+.pipeline-node-title{
+  font-size:.78rem;font-weight:500;
+  color:var(--ink);letter-spacing:-.02em;
+  margin-bottom:.2rem
+}
+.pipeline-node-desc{
+  font-size:.68rem;color:var(--ink-subtle);
+  line-height:1.3
+}
+.pipeline-arrow{
+  color:var(--ink-tertiary);
+  font-size:1.1rem;flex-shrink:0
+}
+
+.feedback-row{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:1rem;width:100%
+}
+.feedback-card{
+  background:var(--surface-1);
+  border:1px solid var(--hairline);
+  border-radius:12px;padding:1.25rem 1.5rem;
+  text-align:center;
+  transition:border-color .3s ease,box-shadow .3s ease;
+  opacity:0;transform:translateY(15px)
+}
+.slide.active .feedback-card{animation:fadeUp .7s cubic-bezier(.16,1,.3,1) forwards}
+.slide.active .feedback-card:nth-child(1){animation-delay:.15s}
+.slide.active .feedback-card:nth-child(2){animation-delay:.3s}
+.feedback-card:hover{border-color:var(--primary);box-shadow:0 0 25px rgba(94,106,210,.06)}
+.feedback-card .card-icon{font-size:2rem;margin-bottom:.5rem}
+.feedback-card .card-title{font-size:1rem}
+
+.closing{text-align:center}
+.closing .hero-title{
+  font-size:clamp(2rem,5vw,4rem);
+  font-weight:600;letter-spacing:-.04em;
+  color:var(--ink);line-height:1.1;
+  opacity:0;transform:translateY(30px);
+  animation:fadeUp 1s cubic-bezier(.16,1,.3,1) .1s forwards
+}
+.closing .hero-subtitle{
+  font-size:1rem;color:var(--ink-subtle);
+  margin-top:.75rem;letter-spacing:-.01em;
+  opacity:0;animation:fadeIn .8s ease .4s forwards
+}
+.closing .divider-line{
+  width:60px;height:1px;background:var(--hairline);
+  margin:1.5rem auto;
+  opacity:0;animation:fadeIn .8s ease .5s forwards
+}
+.closing .links{
+  display:flex;flex-wrap:wrap;gap:.6rem;
+  justify-content:center;margin-top:.5rem;
+  opacity:0;animation:fadeUp .8s cubic-bezier(.16,1,.3,1) .6s forwards
+}
+.closing .links a{
+  display:inline-flex;align-items:center;gap:.35rem;
+  padding:.5rem 1rem;border-radius:8px;
+  background:var(--surface-1);
+  border:1px solid var(--hairline);
+  color:var(--ink-muted);
+  font-size:.8rem;text-decoration:none;
+  transition:border-color .3s ease,color .3s ease,box-shadow .3s ease
+}
+.closing .links a:hover{
+  border-color:var(--primary);color:var(--ink);
+  box-shadow:0 0 20px rgba(94,106,210,.08)
+}
+.closing .footer-note{
+  font-size:.75rem;color:var(--ink-tertiary);
+  margin-top:2.5rem;letter-spacing:0;
+  opacity:0;animation:fadeIn .8s ease .8s forwards
+}
+
+@media(max-width:900px){
+  .card-grid-2,.card-grid-3{grid-template-columns:1fr 1fr}
+  .feedback-row{grid-template-columns:1fr}
+  .slide{padding:2rem 1.5rem}
+}
+@media(max-width:600px){
+  .card-grid-2,.card-grid-3{grid-template-columns:1fr}
+  .pipeline-flow{flex-direction:column}
+  .pipeline-arrow{transform:rotate(90deg)}
+  .slide{padding:1.5rem 1rem}
+  .nav-arrow{width:36px;height:36px;font-size:1rem}
+  .nav-arrow.prev{left:.5rem}
+  .nav-arrow.next{right:.5rem}
+}
+</style>
+</head>
+<body>
+<canvas id="particles-canvas" aria-hidden="true"></canvas>
+
+<div id="pres" role="application" aria-label="CI/CD Presentation">
+
+<section class="slide active" data-index="0">
+  <div class="slide-inner portada">
+    <h1 class="hero-title">MINOLI</h1>
+    <p class="hero-subtitle">Continuous Integration · Continuous Delivery</p>
+    <div class="divider"></div>
+    <div class="info-row">
+      <span>Franco Manuel Cáneva</span>
+      <span style="color:var(--hairline)">·</span>
+      <span>UTN · Ing. en Sistemas</span>
+      <span style="color:var(--hairline)">·</span>
+      <span>2nd Evaluation Instance</span>
+    </div>
+    <div class="badge">
+      <span class="badge-dot"></span>
+      Pipeline operational · All checks passing
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-index="1">
+  <div class="slide-inner">
+    <h2 class="slide-title">Environment Architecture</h2>
+    <p class="slide-subtitle">CI/CD pipeline components and integration</p>
+    <div class="slide-divider"></div>
+    <div class="diagram-wrapper">
+      <img src="resultado.png" alt="CI/CD architecture diagram">
+    </div>
+    <div class="tools-row">
+      <span class="tool-badge"><span class="tool-dot" style="background:#F05032"></span>Git</span>
+      <span class="tool-badge"><span class="tool-dot" style="background:#181717"></span>GitHub</span>
+      <span class="tool-badge"><span class="tool-dot" style="background:#19A974"></span>Semaphore CI</span>
+      <span class="tool-badge"><span class="tool-dot" style="background:#2496ED"></span>Docker</span>
+      <span class="tool-badge"><span class="tool-dot" style="background:#009639"></span>Nginx</span>
+      <span class="tool-badge"><span class="tool-dot" style="background:#F3702A"></span>SonarCloud</span>
+      <span class="tool-badge"><span class="tool-dot" style="background:#46E3B7"></span>Render</span>
+      <span class="tool-badge"><span class="tool-dot" style="background:#0052CC"></span>Trello</span>
+      <span class="tool-badge"><span class="tool-dot" style="background:#26A5E4"></span>Telegram</span>
+      <span class="tool-badge"><span class="tool-dot" style="background:#8E75B2"></span>Gemini AI</span>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-index="2">
+  <div class="slide-inner">
+    <h2 class="slide-title">Version Control</h2>
+    <p class="slide-subtitle">Git + GitHub · Feature-branch strategy · Branch protection</p>
+    <div class="slide-divider"></div>
+    <div class="card-grid card-grid-2">
+      <div class="card">
+        <div class="card-icon">⑂</div>
+        <div class="card-title">Feature Branches</div>
+        <div class="card-desc">Each change is developed in a specific branch (<code>feature/*</code>) and integrated via Pull Request.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">⛊</div>
+        <div class="card-title">Branch Protection</div>
+        <div class="card-desc"><strong>main</strong> protected: requires PR with at least 1 approval. No direct pushes.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">⯈</div>
+        <div class="card-title">Pull Requests</div>
+        <div class="card-desc">Each PR triggers the full pipeline on Semaphore. Only merge to main triggers deploy.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">⟐</div>
+        <div class="card-title">Commit Convention</div>
+        <div class="card-desc">Commits include a tag (<code>[2DOP-01]</code>) that Trello uses for automatic tracking.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-index="3">
+  <div class="slide-inner">
+    <h2 class="slide-title">Pipeline CI/CD</h2>
+    <p class="slide-subtitle">Semaphore CI · 3 sequential blocks · Automated validation</p>
+    <div class="slide-divider"></div>
+
+    <div class="pipeline-flow">
+      <div class="pipeline-node">
+        <div class="pipeline-node-title">Core Business Flow</div>
+        <div class="pipeline-node-desc">Contract Audit + Traceability</div>
+      </div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-node">
+        <div class="pipeline-node-title">Code Quality Inspection</div>
+        <div class="pipeline-node-desc">SonarCloud Quality Gate</div>
+      </div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-node">
+        <div class="pipeline-node-title">Docker Build Validation</div>
+        <div class="pipeline-node-desc">nginx:alpine image</div>
+      </div>
+      <span class="pipeline-arrow">→</span>
+      <div class="pipeline-node">
+        <div class="pipeline-node-title">Deploy to Render</div>
+        <div class="pipeline-node-desc">Only from main via PR</div>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Contract Audit (SDD)</div>
+          <div class="step-desc">Executes <code>run_contract_test.sh</code> — if it fails, the pipeline is aborted and feedback is activated via Trello + Telegram + Gemini AI.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">SonarCloud Quality Gate</div>
+          <div class="step-desc">Static analysis: bugs, code smells, duplications. The pipeline only continues if it passes the Quality Gate.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Docker Build + Deploy</div>
+          <div class="step-desc">Builds the Docker image with Nginx Alpine. When merged to main, Render deploys automatically.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-index="4">
+  <div class="slide-inner">
+    <h2 class="slide-title">Spec-Driven Development + AI</h2>
+    <p class="slide-subtitle">Automated contract · Gemini AI · Generated fix-plan</p>
+    <div class="slide-divider"></div>
+    <div class="card-grid card-grid-2">
+      <div class="card">
+        <div class="card-icon">📋</div>
+        <div class="card-title">The Contract</div>
+        <div class="card-desc">The rendered body of <code>index.html</code> must be exactly <strong>"MINOLI"</strong>. No extra spaces or additional text.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚙️</div>
+        <div class="card-title">Automated Test</div>
+        <div class="card-desc"><code>run_contract_test.sh</code> extracts the body text, cleans HTML tags, and compares against the contract.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🤖</div>
+        <div class="card-title">Gemini AI Analysis</div>
+        <div class="card-desc">If the contract is broken, <code>ask_gemini.sh</code> sends the error + code + requirements to Gemini 2.5 Flash.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">📄</div>
+        <div class="card-title">Fix Plan</div>
+        <div class="card-desc">Gemini produces <code>fix-plan.md</code> with: Detected Error, Root Cause, Steps to Fix, and Final Verification.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-index="5">
+  <div class="slide-inner">
+    <h2 class="slide-title">Feedback Mechanism</h2>
+    <p class="slide-subtitle">Multi-channel notifications · Extreme traceability</p>
+    <div class="slide-divider"></div>
+    <div class="feedback-row">
+      <div class="feedback-card">
+        <div class="card-icon">📦</div>
+        <div class="card-title">Trello</div>
+        <div class="card-desc" style="font-size:.8rem;color:var(--ink-subtle);line-height:1.5;margin-top:.4rem">
+          Cards are automatically moved between lists:<br>
+          <strong style="color:var(--ink-muted)">Processing</strong> → <strong style="color:var(--success)">Completed</strong> ｜ <strong style="color:#e05050">Failed</strong><br>
+          Each card is identified by the commit tag (<code>[2DOP-01]</code>) and the fix-plan is attached in case of error.
+        </div>
+      </div>
+      <div class="feedback-card">
+        <div class="card-icon">✈️</div>
+        <div class="card-title">Telegram</div>
+        <div class="card-desc" style="font-size:.8rem;color:var(--ink-subtle);line-height:1.5;margin-top:.4rem">
+          Instant notifications to the team:<br>
+          <span style="color:var(--success)">✅ BUILD OK</span> — Contract verified<br>
+          <span style="color:#e05050">❌ BUILD FAILED</span> — Incluye análisis de IA y fix-plan
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:1rem;display:flex;justify-content:center">
+      <div class="tool-badge" style="padding:.5rem 1rem;font-size:.8rem">
+        <span class="tool-dot" style="background:var(--primary)"></span>
+        Feedback en tiempo real · AI-powered failure analysis
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-index="6">
+  <div class="slide-inner closing">
+    <h1 class="hero-title">Questions?</h1>
+    <p class="hero-subtitle">MINOLI — CI/CD Pipeline · 2nd Evaluation Instance</p>
+    <div class="divider-line"></div>
+    <div class="links">
+      <a href="https://github.com/ManuCaneva/2DO-PARCIAL---CI-CD" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://goya.semaphoreci.com/projects/SEMAPHORE-CI-2DOPARCIAL" target="_blank" rel="noopener">Semaphore CI</a>
+      <a href="https://sonarcloud.io/summary/new_code?id=ManuCaneva_2DO-PARCIAL---CI-CD" target="_blank" rel="noopener">SonarCloud</a>
+      <a href="https://goya-2do-parcial.onrender.com/" target="_blank" rel="noopener">Render</a>
+    </div>
+    <div class="footer-note">Franco Manuel Cáneva · UTN · Systems Engineering</div>
+  </div>
+</section>
+
+</div>
+
+<button class="nav-arrow prev" id="prevBtn" aria-label="Previous slide">◀</button>
+<button class="nav-arrow next" id="nextBtn" aria-label="Next slide">▶</button>
+
+<div id="nav">
+  <div id="nav-dots"></div>
+  <span id="nav-counter">1 / 7</span>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  var c=document.getElementById('particles-canvas');
+  var ctx=c.getContext('2d');
+  var particles=[];
+  var COUNT=45;
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  function createParticles(){
+    particles=Array.from({length:COUNT},function(){
+      return{
+        x:Math.random()*c.width,y:Math.random()*c.height,
+        size:Math.random()*1.5+.3,
+        speedY:-(Math.random()*.2+.04),speedX:(Math.random()-.5)*.06,
+        opacity:Math.random()*.3+.08
+      }
+    })
+  }
+  function animate(){
+    ctx.clearRect(0,0,c.width,c.height);
+    for(var i=0;i<particles.length;i++){
+      var p=particles[i];
+      ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+      ctx.fillStyle='rgba(247,248,248,'+p.opacity+')';ctx.fill();
+      p.y+=p.speedY;p.x+=p.speedX;
+      if(p.y<-10){p.y=c.height+10;p.x=Math.random()*c.width}
+      if(p.x<-10)p.x=c.width+10;if(p.x>c.width+10)p.x=-10
+    }
+    requestAnimationFrame(animate)
+  }
+  window.addEventListener('resize',function(){resize();createParticles()});
+  resize();createParticles();animate();
+
+  var slides=document.querySelectorAll('.slide');
+  var total=slides.length;
+  var current=0;
+  var animating=false;
+
+  var dotsContainer=document.getElementById('nav-dots');
+  var counter=document.getElementById('nav-counter');
+  var prevBtn=document.getElementById('prevBtn');
+  var nextBtn=document.getElementById('nextBtn');
+
+  for(var i=0;i<total;i++){
+    var dot=document.createElement('button');
+    dot.className='nav-dot'+(i===0?' active':'');
+    dot.setAttribute('aria-label','Go to slide '+(i+1));
+    dot.dataset.index=i;
+    dot.addEventListener('click',function(){goTo(parseInt(this.dataset.index))});
+    dotsContainer.appendChild(dot)
+  }
+
+  function updateNav(){
+    var dots=document.querySelectorAll('.nav-dot');
+    for(var i=0;i<dots.length;i++){
+      dots[i].classList.toggle('active',i===current)
+    }
+    counter.textContent=(current+1)+' / '+total;
+    prevBtn.classList.toggle('hidden',current===0);
+    nextBtn.classList.toggle('hidden',current===total-1)
+  }
+
+  function goTo(idx){
+    if(animating||idx===current||idx<0||idx>=total)return;
+    animating=true;
+    var dir=idx>current?'right':'left';
+    var outClass=dir==='right'?'exit-right':'exit-left';
+    slides[current].classList.remove('active');
+    slides[current].classList.add(outClass);
+    var prevIdx=current;
+    setTimeout(function(){slides[prevIdx].classList.remove(outClass)},650);
+    current=idx;
+    slides[current].classList.add('active');
+    updateNav();
+    setTimeout(function(){animating=false},650)
+  }
+
+  function next(){goTo(current+1)}
+  function prev(){goTo(current-1)}
+
+  prevBtn.addEventListener('click',prev);
+  nextBtn.addEventListener('click',next);
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();next()}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();prev()}
+  });
+
+  var touchStartX=0;
+  document.addEventListener('touchstart',function(e){touchStartX=e.changedTouches[0].screenX});
+  document.addEventListener('touchend',function(e){
+    var diff=touchStartX-e.changedTouches[0].screenX;
+    if(Math.abs(diff)>50){diff>0?next():prev()}
+  });
+
+  updateNav()
+})();
+</script>
+</body>
+</html>
